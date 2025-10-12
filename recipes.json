@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "title": "Classic French Onion Soup",
+    "text": "Caramelize onions in butter, add beef broth, thyme, and sherry, then top with toasted baguette slices and melted Gruyère.",
+    "createdAt": "2025-10-05T18:23:11.201Z"
+  },
+  {
+    "id": 2,
+    "title": "Nashville Hot Fried Chicken Sandwich",
+    "text": "Fry seasoned chicken thighs, brush with spicy cayenne oil, and serve on brioche buns with pickles and slaw.",
+    "createdAt": "2025-10-06T14:45:32.512Z"
+  },
+  {
+    "id": 3,
+    "title": "Shepherd’s Pie",
+    "text": "Layer ground beef and vegetables with mashed potatoes on top, bake until golden brown.",
+    "createdAt": "2025-10-07T09:13:45.700Z"
+  },
+  {
+    "id": 4,
+    "title": "Chicken Pot Pie",
+    "text": "Cook chicken with carrots, peas, and creamy gravy, fill in pastry crust, bake until golden.",
+    "createdAt": "2025-10-07T10:02:15.000Z"
+  },
+  {
+    "id": 5,
+    "title": "Tomato Soup and Grilled Cheese",
+    "text": "Simmer tomatoes with garlic and cream, serve with buttery toasted cheese sandwiches.",
+    "createdAt": "2025-10-08T15:18:03.901Z"
+  }
+]
