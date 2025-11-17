@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>TasteBase — Profile</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+    <div class="topbar">
+        <div class="topbar-left" id="nav-home">
+            <div class="logo-circle">TB</div>
+            <div class="app-name">TasteBase</div>
+        </div>
+
+        <div class="topbar-right">
+            <span class="badge" id="nav-current">Profile</span>
+            <button class="btn-outline" id="nav-upgrade">Upgrade</button>
+            <button class="btn" id="nav-logout">Sign Out</button>
+        </div>
+    </div>
+
+    <div class="page">
+        <div class="page-title">My Profile</div>
+        <div class="subtle">Manage your account information</div>
+
+        <div class="form-card">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="text" id="prof-email" disabled>
+            </div>
+
+            <div class="form-group">
+                <label>Account Type</label>
+                <input type="text" id="prof-type" disabled>
+            </div>
+
+            <button class="btn" id="upgrade-btn" style="display:none;">Upgrade to Premium</button>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token");
+        if (!token) {
+            window.location = "login.html";
+        }
+
+        // NAVIGATION
+        document.getElementById("nav-home").onclick = () => location.href = "home.html";
+        document.getElementById("nav-logout").onclick = () => {
+            localStorage.clear();
+            location.href = "index.html";
+        };
+        document.getElementById("nav-upgrade").onclick = () => location.href = "upgrade.html";
+
+        async function loadProfile() {
+            try {
+                const res = await fetch("/api/upgrade/profile", {
+                    headers: { Authorization: "Bearer " + token }
+                });
+
+                if (!res.ok) {
+                    console.error("Profile load failed:", await res.text());
+                    return (location.href = "login.html");
+                }
+
+                const user = await res.json();
+
+                document.getElementById("prof-email").value = user.email;
+                document.getElementById("prof-type").value =
+                    user.isPremium
+                        ? "Premium until " + new Date(user.premiumExpires).toLocaleDateString("en-US")
+                        : "Free";
+
+
+                // Hide topbar upgrade button if already premium
+                if (user.isPremium) {
+                    document.getElementById("nav-upgrade").style.display = "none";
+                }
+
+                // Show form-card upgrade button only if NOT premium
+                if (!user.isPremium) {
+                    const upgradeBtn = document.getElementById("upgrade-btn");
+                    upgradeBtn.style.display = "block";
+                    upgradeBtn.onclick = () => location.href = "upgrade.html";
+                }
+
+            } catch (err) {
+                console.error("Profile load failed:", err);
+            }
+        }
+
+        loadProfile();
+    </script>
+
+
+
+</body>
+</html>

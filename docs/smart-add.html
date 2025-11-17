@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>TasteBase - Smart Add</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+    <div class="topbar">
+        <div class="topbar-left" id="nav-home">
+            <div class="logo-circle">TB</div>
+            <div class="app-name">TasteBase</div>
+        </div>
+        <div class="topbar-right">
+            <span class="badge" id="nav-current">Smart Add</span>
+            <button class="btn-outline" id="nav-profile">Profile</button>
+            <button class="btn" id="nav-logout">Sign Out</button>
+        </div>
+    </div>
+
+    <div class="page">
+        <div class="page-title">AI Smart Add</div>
+        <div class="subtle">Generate new recipes using AI based on your existing collection.</div>
+
+        <div class="form-card">
+            <div class="form-group">
+                <label>Optional Prompt</label>
+                <input id="prompt" type="text" placeholder="Example: 'Create a dessert with strawberries'">
+            </div>
+
+            <button class="btn" id="generate-btn">Generate Recipe</button>
+        </div>
+
+        <div class="subtle" id="result"></div>
+    </div>
+
+    <script>
+const token = localStorage.getItem('token');
+if (!token) location.href = "login.html";
+
+// NAV
+document.getElementById("nav-home").onclick = () => location.href = "home.html";
+document.getElementById("nav-profile").onclick = () => location.href = "profile.html";
+document.getElementById("nav-logout").onclick = () => {
+    localStorage.clear();
+    location.href = "index.html";
+};
+
+document.getElementById("generate-btn").onclick = async () => {
+    const body = {};
+    const prompt = document.getElementById("prompt").value.trim();
+    if (prompt) body.prompt = prompt;
+
+    const res = await fetch("/api/recipes/smart", {
+        method: "POST",
+        headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+    });
+
+    const result = document.getElementById("result");
+
+    if (res.status === 403) {
+        result.textContent = "❌ Premium feature only. Upgrade to use Smart Add.";
+        return;
+    }
+
+    if (!res.ok) {
+        result.textContent = "❌ Error generating recipe.";
+        return;
+    }
+
+    const recipe = await res.json();
+    result.textContent = "✅ Recipe generated!";
+    setTimeout(() => location.href = `view-recipe.html?id=${recipe._id}`, 1200);
+};
+    </script>
+
+</body>
+</html>

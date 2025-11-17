@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>TasteBase - Search</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+    <div class="topbar">
+        <div class="topbar-left" id="nav-home">
+            <div class="logo-circle">TB</div>
+            <div class="app-name">TasteBase</div>
+        </div>
+        <div class="topbar-right">
+            <span class="badge" id="nav-current">Search</span>
+            <button class="btn-outline" id="nav-profile">Profile</button>
+            <button class="btn" id="nav-logout">Sign Out</button>
+        </div>
+    </div>
+
+    <div class="page">
+        <div class="search-bar" style="margin-bottom:1rem;">
+            <input type="text" id="search-input" placeholder="Search recipes...">
+            <button class="icon-btn" id="search-btn">🔍</button>
+        </div>
+
+        <div class="card-grid" id="results"></div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token");
+        if (!token) location.href = "login.html";
+
+        // NAV
+        document.getElementById("nav-home").onclick = () => location.href = "home.html";
+        document.getElementById("nav-profile").onclick = () => location.href = "profile.html";
+        document.getElementById("nav-logout").onclick = () => {
+            localStorage.clear();
+            location.href = "index.html";
+        };
+
+        const params = new URLSearchParams(location.search);
+        const term = params.get("q") || "";
+        document.getElementById("search-input").value = term;
+
+        document.getElementById("search-btn").onclick = () => {
+            const t = document.getElementById("search-input").value.trim();
+            if (!t) return;
+            location.href = `search.html?q=${encodeURIComponent(t)}`;
+        };
+
+        if (term) runSearch(term);
+
+        async function runSearch(word) {
+            const res = await fetch(`/api/recipes/search?q=${encodeURIComponent(word)}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const list = await res.json();
+            render(list);
+        }
+
+        function render(list) {
+            const grid = document.getElementById("results");
+            grid.innerHTML = "";
+
+            if (!list.length) {
+                grid.innerHTML = "<div class='subtle'>No results.</div>";
+                return;
+            }
+
+            list.forEach(r => {
+                const div = document.createElement("div");
+                div.className = "recipe-card";
+                div.onclick = () => location.href = `view-recipe.html?id=${r._id}`;
+
+                const img = document.createElement("div");
+                img.className = "thumb";
+                img.style.backgroundImage = r.imageUrl ? `url('${r.imageUrl}')` : "none";
+                img.style.backgroundSize = "cover";
+                img.style.backgroundPosition = "center";
+
+                const title = document.createElement("div");
+                title.className = "recipe-card-title";
+                title.textContent = r.title;
+
+                // PREVIEW TEXT
+                const preview = document.createElement("div");
+                preview.className = "recipe-card-meta";
+                preview.textContent = (r.text || "").substring(0, 80) + "...";
+
+                const meta = document.createElement("div");
+                meta.className = "recipe-card-meta subtle";
+                meta.textContent = r.favorite ? "★ Favorite" : "";
+
+                div.append(img, title, preview, meta);
+                grid.append(div);
+            });
+        }
+
+    </script>
+
+</body>
+</html>
