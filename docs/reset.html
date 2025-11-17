@@ -41,7 +41,7 @@ document.getElementById("reset-btn").onclick = async () => {
         return;
     }
 
-    const res = await fetch("{API_BASE}/api/auth/reset", {
+    const res = await fetch(`${API_BASE}/api/auth/reset`, {
         method: "POST",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({ token, password: p1 })

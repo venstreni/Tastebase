@@ -48,7 +48,7 @@
         };
 
         document.getElementById("upgrade-btn").onclick = async () => {
-            const res = await fetch("{API_BASE}/api/upgrade", {
+            const res = await fetch(`${API_BASE}/api/upgrade`, {
                 method: "POST",
                 headers: { Authorization: "Bearer " + token }
             });

@@ -76,7 +76,7 @@
         let favoritesOnly = false;
 
         async function loadRecipes() {
-            const url = favoritesOnly ? "${API_BASE}/api/recipes?favorite=true" : "${API_BASE}/api/recipes";
+            const url = favoritesOnly ? `${API_BASE}/api/recipes?favorite=true` : `${API_BASE}/api/recipes`;
             const res = await fetch(url, { headers: { Authorization: "Bearer " + token } });
             const list = await res.json();
             renderGrid(list);
@@ -150,7 +150,7 @@
 
         // Fetch profile to check premium status
         async function checkPremium() {
-            const res = await fetch("${API_BASE}/api/upgrade/profile", {
+            const res = await fetch(`${API_BASE}/api/upgrade/profile`, {
                 headers: { Authorization: "Bearer " + token }
             });
 
@@ -198,7 +198,7 @@
         submitSmart.onclick = async () => {
             const prompt = document.getElementById("smart-prompt").value.trim();
 
-            const res = await fetch("${API_BASE}/api/recipes/smart", {
+            const res = await fetch(`${API_BASE}/api/recipes/smart`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

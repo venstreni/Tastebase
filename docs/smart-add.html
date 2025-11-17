@@ -53,7 +53,7 @@
             const prompt = document.getElementById("prompt").value.trim();
             if (prompt) body.prompt = prompt;
 
-         const res = await fetch("{API_BASE}/api/recipes/smart", {
+         const res = await fetch(`${API_BASE}/api/recipes/smart`, {
              method: "POST",
                 headers: {
                    Authorization: "Bearer " + token,
