@@ -36,30 +36,31 @@
     </div>
 
     <script>
-const token = localStorage.getItem('token');
-if (!token) location.href = "login.html";
+        const API_BASE = "https://tastebase-api.onrender.com";
+        const token = localStorage.getItem('token');
+        if (!token) location.href = "login.html";
 
-// NAV
-document.getElementById("nav-home").onclick = () => location.href = "home.html";
-document.getElementById("nav-profile").onclick = () => location.href = "profile.html";
-document.getElementById("nav-logout").onclick = () => {
-    localStorage.clear();
-    location.href = "index.html";
-};
+        // NAV
+        document.getElementById("nav-home").onclick = () => location.href = "home.html";
+        document.getElementById("nav-profile").onclick = () => location.href = "profile.html";
+        document.getElementById("nav-logout").onclick = () => {
+            localStorage.clear();
+            location.href = "index.html";
+        };
 
-document.getElementById("generate-btn").onclick = async () => {
-    const body = {};
-    const prompt = document.getElementById("prompt").value.trim();
-    if (prompt) body.prompt = prompt;
+        document.getElementById("generate-btn").onclick = async () => {
+            const body = {};
+            const prompt = document.getElementById("prompt").value.trim();
+            if (prompt) body.prompt = prompt;
 
-    const res = await fetch("{API_BASE}/api/recipes/smart", {
-        method: "POST",
-        headers: {
-            Authorization: "Bearer " + token,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-    });
+         const res = await fetch("{API_BASE}/api/recipes/smart", {
+             method: "POST",
+                headers: {
+                   Authorization: "Bearer " + token,
+                   "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            });
 
     const result = document.getElementById("result");
 

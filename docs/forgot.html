@@ -24,6 +24,7 @@
     </div>
 
     <script>
+        const API_BASE = "https://tastebase-api.onrender.com";
         document.getElementById("send-btn").onclick = async () => {
             const email = document.getElementById("email").value.trim();
             if (!email) return;
