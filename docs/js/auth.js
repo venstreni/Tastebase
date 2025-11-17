@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const email = e.target.email.value.trim();
             const password = e.target.password.value.trim();
 
-            const res = await fetch("/api/auth/login", {
+            const res = await fetch("{API_BASE}/api/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            const res = await fetch("/api/auth/signup", {
+            const res = await fetch("{API_BASE}/api/auth/signup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             const email = e.target.email.value.trim();
 
-            const res = await fetch("/api/auth/forgot", {
+            const res = await fetch("{API_BASE}/api/auth/forgot", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email })
