@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>TasteBase - View Recipe</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+    <div class="topbar">
+        <div class="topbar-left" id="nav-home">
+            <div class="logo-circle">TB</div>
+            <div class="app-name">TasteBase</div>
+        </div>
+        <div class="topbar-right">
+            <span class="badge" id="nav-current">View</span>
+            <button class="btn-outline" id="nav-profile">Profile</button>
+            <button class="btn" id="nav-logout">Sign Out</button>
+        </div>
+    </div>
+
+    <div class="page">
+        <div class="recipe-view" id="recipe-view" style="display:none;">
+            <div class="recipe-view-main">
+                <div class="thumb" id="recipe-thumb" style="
+                    width:100%;
+                    height:200px;
+                    border-radius: 1rem;
+                    background-size: cover;
+                    background-position: center;
+                    background-color: #f3eded;
+                    margin-bottom: 1rem;">
+                </div>
+                <h1 id="r-title"></h1>
+                <div id="r-body"></div>
+                <div class="top-actions">
+                    <button class="btn" id="edit-btn">Edit</button>
+                    <button class="btn-outline" id="delete-btn">Delete</button>
+                </div>
+            </div>
+            <div class="recipe-view-side">
+                <button class="btn" id="export-json">Export JSON</button>
+                <button class="btn-outline" id="export-text">Export Text</button>
+                <button class="btn-outline" id="export-html">Export HTML</button>
+            </div>
+        </div>
+
+        <div class="subtle" id="loading">Loading recipe...</div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token");
+        if (!token) location.href = "login.html";
+
+        // NAV
+        document.getElementById("nav-home").onclick = () => location.href = "home.html";
+        document.getElementById("nav-profile").onclick = () => location.href = "profile.html";
+        document.getElementById("nav-logout").onclick = () => {
+            localStorage.clear();
+            location.href = "index.html";
+        };
+
+        const params = new URLSearchParams(location.search);
+        const id = params.get("id");
+
+        loadRecipe();
+
+        async function loadRecipe() {
+            const res = await fetch(`/api/recipes/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (!res.ok) return alert("Error loading recipe");
+
+            const recipe = await res.json();
+
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("recipe-view").style.display = "flex";
+
+            const thumb = document.getElementById("recipe-thumb");
+            if (recipe.imageUrl && recipe.imageUrl.trim() !== "") {
+                thumb.style.backgroundImage = `url('${recipe.imageUrl}')`;
+                thumb.style.backgroundSize = "cover";
+                thumb.style.backgroundPosition = "center";
+            } else {
+                thumb.style.backgroundImage = "none";
+            }
+
+            document.getElementById("r-title").textContent = recipe.title;
+            document.getElementById("r-body").innerHTML = marked.parse(recipe.text || "");
+
+            document.getElementById("edit-btn").onclick = () =>
+                location.href = `edit-recipe.html?id=${id}`;
+            document.getElementById("delete-btn").onclick = async () => {
+                if (!confirm("Delete this recipe?")) return;
+                await fetch(`/api/recipes/${id}`, {
+                    method: "DELETE",
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                location.href = "home.html";
+            };
+
+            document.getElementById("export-json").onclick = () =>
+                window.open(`/api/recipes/${id}/export?format=json`, "_blank");
+            document.getElementById("export-text").onclick = () =>
+                window.open(`/api/recipes/${id}/export?format=text`, "_blank");
+            document.getElementById("export-html").onclick = () =>
+                window.open(`/api/recipes/${id}/export?format=html`, "_blank");
+        }
+    </script>
+
+</body>
+</html>
