@@ -28,15 +28,15 @@
             const email = document.getElementById("email").value.trim();
             if (!email) return;
 
-            const res = await fetch("/api/auth/forgot", {
+            const res = await fetch("{API_BASE}/api/auth/forgot", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email })
             });
 
             document.getElementById("result").textContent =
-                res.ok ? "✅ If this email is registered, a reset link was sent."
-                    : "❌ Failed to send email.";
+                res.ok ? "If this email is registered, a reset link was sent."
+                    : "Failed to send email.";
         };
     </script>
 

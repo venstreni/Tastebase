@@ -53,7 +53,7 @@
         if (term) runSearch(term);
 
         async function runSearch(word) {
-            const res = await fetch(`/api/recipes/search?q=${encodeURIComponent(word)}`, {
+            const res = await fetch(`{API_BASE}/api/recipes/search?q=${encodeURIComponent(word)}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const list = await res.json();

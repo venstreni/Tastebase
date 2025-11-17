@@ -52,7 +52,7 @@ document.getElementById("generate-btn").onclick = async () => {
     const prompt = document.getElementById("prompt").value.trim();
     if (prompt) body.prompt = prompt;
 
-    const res = await fetch("/api/recipes/smart", {
+    const res = await fetch("{API_BASE}/api/recipes/smart", {
         method: "POST",
         headers: {
             Authorization: "Bearer " + token,
@@ -64,17 +64,17 @@ document.getElementById("generate-btn").onclick = async () => {
     const result = document.getElementById("result");
 
     if (res.status === 403) {
-        result.textContent = "❌ Premium feature only. Upgrade to use Smart Add.";
+        result.textContent = "Premium feature only. Upgrade to use Smart Add.";
         return;
     }
 
     if (!res.ok) {
-        result.textContent = "❌ Error generating recipe.";
+        result.textContent = "Error generating recipe.";
         return;
     }
 
     const recipe = await res.json();
-    result.textContent = "✅ Recipe generated!";
+    result.textContent = "Recipe generated!";
     setTimeout(() => location.href = `view-recipe.html?id=${recipe._id}`, 1200);
 };
     </script>

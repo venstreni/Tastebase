@@ -1,7 +1,7 @@
 ﻿// public/js/app.js
 // shared helpers for all pages
 
-const API_BASE = "/api";
+const API_BASE = "https://tastebase-api.onrender.com";
 
 function getToken() {
   return localStorage.getItem("token");

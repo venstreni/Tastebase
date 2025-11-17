@@ -55,7 +55,7 @@
 
         async function loadProfile() {
             try {
-                const res = await fetch("/api/upgrade/profile", {
+                const res = await fetch("{API_BASE}/api/upgrade/profile", {
                     headers: { Authorization: "Bearer " + token }
                 });
 

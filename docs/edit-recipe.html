@@ -65,7 +65,7 @@
 
         async function loadExisting() {
             document.getElementById("title-label").textContent = "Edit Recipe";
-            const res = await fetch(`/api/recipes/${id}`, {
+            const res = await fetch(`{API_BASE}/api/recipes/${id}`, {
                 headers: { Authorization: "Bearer " + token }
             });
             const recipe = await res.json();
@@ -82,7 +82,7 @@
                 imageUrl: document.getElementById("img-input").value.trim()
             };
 
-            const url = isEdit ? `/api/recipes/${id}` : "/api/recipes";
+            const url = isEdit ? `{API_BASE}/api/recipes/${id}` : "{API_BASE}/api/recipes";
             const method = isEdit ? "PUT" : "POST";
 
             await fetch(url, {

@@ -67,7 +67,7 @@
         loadRecipe();
 
         async function loadRecipe() {
-            const res = await fetch(`/api/recipes/${id}`, {
+            const res = await fetch(`{API_BASE}/api/recipes/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -94,7 +94,7 @@
                 location.href = `edit-recipe.html?id=${id}`;
             document.getElementById("delete-btn").onclick = async () => {
                 if (!confirm("Delete this recipe?")) return;
-                await fetch(`/api/recipes/${id}`, {
+                await fetch(`{API_BASE}/api/recipes/${id}`, {
                     method: "DELETE",
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -102,11 +102,11 @@
             };
 
             document.getElementById("export-json").onclick = () =>
-                window.open(`/api/recipes/${id}/export?format=json`, "_blank");
+                window.open(`{API_BASE}/api/recipes/${id}/export?format=json`, "_blank");
             document.getElementById("export-text").onclick = () =>
-                window.open(`/api/recipes/${id}/export?format=text`, "_blank");
+                window.open(`{API_BASE}/api/recipes/${id}/export?format=text`, "_blank");
             document.getElementById("export-html").onclick = () =>
-                window.open(`/api/recipes/${id}/export?format=html`, "_blank");
+                window.open(`{API_BASE}/api/recipes/${id}/export?format=html`, "_blank");
         }
     </script>
 
