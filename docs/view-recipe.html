@@ -54,7 +54,10 @@
         const token = localStorage.getItem("token");
         if (!token) location.href = "login.html";
 
-        // NAV
+        // GLOBAL RECIPE STORE
+        let currentRecipe = null;
+
+        // NAVIGATION
         document.getElementById("nav-home").onclick = () => location.href = "home.html";
         document.getElementById("nav-profile").onclick = () => location.href = "profile.html";
         document.getElementById("nav-logout").onclick = () => {
@@ -68,46 +71,113 @@
         loadRecipe();
 
         async function loadRecipe() {
-            const res = await fetch(`${API_BASE}/api/recipes/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            if (!res.ok) return alert("Error loading recipe");
-
-            const recipe = await res.json();
-
-            document.getElementById("loading").style.display = "none";
-            document.getElementById("recipe-view").style.display = "flex";
-
-            const thumb = document.getElementById("recipe-thumb");
-            if (recipe.imageUrl && recipe.imageUrl.trim() !== "") {
-                thumb.style.backgroundImage = `url('${recipe.imageUrl}')`;
-                thumb.style.backgroundSize = "cover";
-                thumb.style.backgroundPosition = "center";
-            } else {
-                thumb.style.backgroundImage = "none";
-            }
-
-            document.getElementById("r-title").textContent = recipe.title;
-            document.getElementById("r-body").innerHTML = marked.parse(recipe.text || "");
-
-            document.getElementById("edit-btn").onclick = () =>
-                location.href = `edit-recipe.html?id=${id}`;
-            document.getElementById("delete-btn").onclick = async () => {
-                if (!confirm("Delete this recipe?")) return;
-                await fetch(`{API_BASE}/api/recipes/${id}`, {
-                    method: "DELETE",
+            try {
+                const res = await fetch(`${API_BASE}/api/recipes/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                location.href = "home.html";
-            };
 
-            document.getElementById("export-json").onclick = () =>
-                window.open(`${API_BASE}/api/recipes/${id}/export?format=json`, "_blank");
-            document.getElementById("export-text").onclick = () =>
-                window.open(`${API_BASE}/api/recipes/${id}/export?format=text`, "_blank");
-            document.getElementById("export-html").onclick = () =>
-                window.open(`${API_BASE}/api/recipes/${id}/export?format=html`, "_blank");
+                if (!res.ok) {
+                    alert("Error loading recipe");
+                    return;
+                }
+
+                // READ THE BODY **ONCE**
+                currentRecipe = await res.json();
+
+                // SHOW PAGE
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("recipe-view").style.display = "flex";
+
+                // THUMBNAIL
+                const thumb = document.getElementById("recipe-thumb");
+                if (currentRecipe.imageUrl?.trim()) {
+                    thumb.style.backgroundImage = `url('${currentRecipe.imageUrl}')`;
+                } else {
+                    thumb.style.backgroundImage = "none";
+                }
+
+                // POPULATE CONTENT
+                document.getElementById("r-title").textContent = currentRecipe.title;
+                document.getElementById("r-body").innerHTML = marked.parse(currentRecipe.text || "");
+
+                // BUTTONS
+                document.getElementById("edit-btn").onclick =
+                    () => location.href = `edit-recipe.html?id=${id}`;
+
+                document.getElementById("delete-btn").onclick = async () => {
+                    if (!confirm("Delete this recipe?")) return;
+
+                    await fetch(`${API_BASE}/api/recipes/${id}`, {
+                        method: "DELETE",
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+
+                    location.href = "home.html";
+                };
+
+                // EXPORT HANDLERS
+                document.getElementById("export-json").onclick = () => exportRecipe("json");
+                document.getElementById("export-text").onclick = () => exportRecipe("text");
+                document.getElementById("export-html").onclick = () => exportRecipe("html");
+
+            } catch (err) {
+                console.error("Load failed:", err);
+                alert("Failed to load recipe.");
+            }
+        }
+
+        // =========================
+        //  EXPORT HANDLERS
+        // =========================
+        async function exportRecipe(format) {
+            if (!currentRecipe) {
+                return alert("Recipe not loaded yet.");
+            }
+
+            try {
+                const res = await fetch(
+                    `${API_BASE}/api/recipes/${id}/export?format=${format}`,
+                    { headers: { Authorization: "Bearer " + token } }
+                );
+
+                if (!res.ok) {
+                    console.error(await res.text());
+                    alert("Export failed.");
+                    return;
+                }
+
+                const filename = currentRecipe.title
+                    .replace(/[^a-z0-9]/gi, "_")
+                    .toLowerCase();
+
+                if (format === "json") {
+                    const data = await res.json();
+                    downloadBlob(JSON.stringify(data, null, 2), filename + ".json", "application/json");
+                } else {
+                    const data = await res.text();
+                    const type = format === "text" ? "text/plain" : "text/html";
+                    const ext = format === "text" ? ".txt" : ".html";
+                    downloadBlob(data, filename + ext, type);
+                }
+
+            } catch (err) {
+                console.error(err);
+                alert("Export failed.");
+            }
+        }
+
+        function downloadBlob(content, filename, type) {
+            const blob = new Blob([content], { type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
     </script>
 
