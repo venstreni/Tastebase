@@ -194,29 +194,55 @@
             modal.style.display = "none";
         };
 
-        // Submit Smart Add
+        // Submit Smart Add with spinner + disabled UI
         submitSmart.onclick = async () => {
-            const prompt = document.getElementById("smart-prompt").value.trim();
+            const promptInput = document.getElementById("smart-prompt");
+            const prompt = promptInput.value.trim();
 
-            const res = await fetch(`${API_BASE}/api/recipes/smart`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token
-                },
-                body: JSON.stringify({ prompt })
-            });
+            // Save original button text
+            const originalText = submitSmart.innerHTML;
 
-            if (!res.ok) {
-                alert("Smart Add failed: " + (await res.text()));
-                return;
+            // Disable UI
+            submitSmart.disabled = true;
+            promptInput.disabled = true;
+
+            // Replace button text with spinner
+            submitSmart.innerHTML = `<span class="spinner"></span> Generating...`;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/recipes/smart`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + token
+                    },
+                    body: JSON.stringify({ prompt })
+                });
+
+                if (!res.ok) {
+                    const err = await res.text();
+                    alert("Smart Add failed: " + err);
+                    return;
+                }
+
+                // successful generation
+                modal.style.display = "none";
+                promptInput.value = "";
+
+                loadRecipes(); // Refresh dashboard
+
+            } catch (err) {
+                console.error(err);
+                alert("Smart Add failed.");
             }
 
-            modal.style.display = "none";
-            document.getElementById("smart-prompt").value = "";
-
-            loadRecipes(); // refresh dashboard with new recipe
+            // Reset button UI
+            submitSmart.disabled = false;
+            promptInput.disabled = false;
+            submitSmart.innerHTML = originalText;
         };
+
+
 
 
     </script>
